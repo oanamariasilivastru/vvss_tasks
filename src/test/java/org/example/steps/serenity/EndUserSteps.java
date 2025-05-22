@@ -1,40 +1,90 @@
 package org.example.steps.serenity;
 
-import org.example.pages.DictionaryPage;
 import net.thucydides.core.annotations.Step;
-import net.thucydides.core.steps.ScenarioSteps;
+import org.example.pages.LoginPage;
+import org.example.pages.OpenAccountPage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
 
 public class EndUserSteps {
-
-    DictionaryPage dictionaryPage;
+    LoginPage loginPage;
+    OpenAccountPage openAccountPage;
 
     @Step
-    public void enters(String keyword) {
-        dictionaryPage.enter_keywords(keyword);
+    public void isOnTheLoginPage() {
+        loginPage.open();
     }
 
     @Step
-    public void starts_search() {
-        dictionaryPage.lookup_terms();
+    public void entersUsername(String username) {
+        loginPage.enterUsername(username);
     }
 
     @Step
-    public void should_see_definition(String definition) {
-        assertThat(dictionaryPage.getDefinitions(), hasItem(containsString(definition)));
+    public void entersPassword(String password) {
+        loginPage.enterPassword(password);
     }
 
     @Step
-    public void is_the_home_page() {
-        dictionaryPage.open();
+    public void clicksLoginButton() {
+        loginPage.clickLoginButton();
     }
 
     @Step
-    public void looks_for(String term) {
-        enters(term);
-        starts_search();
+    public void shouldSeeHomePage() {
+        assertThat("Home page should be displayed", loginPage.containsText("Accounts Overview"));
+    }
+
+    @Step
+    public void shouldSeeLoginPage() {
+        assertThat("The title of the page should be 'ParaBank | Welcome | Online Banking'", openAccountPage.getTitle().equals("ParaBank | Welcome | Online Banking"));
+    }
+    @Step
+    public void shouldSeeErrorPage() {
+        System.out.println(loginPage);
+        assertThat("Error message should be displayed", loginPage.containsText("An internal error has occurred and has been logged.\n"));
+    }
+
+    @Step
+    public void openNewAccountPage() {
+        openAccountPage.open();
+    }
+
+    @Step
+    public void selectsAccountType(String accountType) {
+        openAccountPage.selectAccountType(accountType);
+    }
+
+    @Step
+    public void selectsExistingAccount(String existingAccount) {
+        openAccountPage.selectExistingAccount(existingAccount);
+    }
+
+    @Step
+    public void clicksOpenNewAccountButton() {
+        openAccountPage.clickOpenNewAccountButton();
+    }
+
+    @Step
+    public void shouldSeeAccountOpened() {
+        assertThat("Account opened message should be displayed", openAccountPage.isAccountOpened());
+    }
+
+    @Step
+    public void clickOverviewButton() {
+        openAccountPage.clickOverviewButton();
+    }
+
+    @Step
+    public void shouldOverviewTableHavePositiveNumberOfRows() {
+        assertThat(
+                "Should have at least 1 row in the overview table",
+                openAccountPage.selectNumberOfRowsOverviewTable() > 0
+        );
+    }
+
+    @Step
+    public void logsOut() {
+        openAccountPage.clickLogoutButton();
     }
 }
